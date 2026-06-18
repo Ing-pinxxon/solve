@@ -1,0 +1,395 @@
+/* DEUDAZERO // GLOBAL STYLES FINTECH EDITION */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import './variables.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #040608; /* Fondo exterior absoluto */
+  color: var(--text-primary);
+  min-height: 100vh;
+  height: 100dvh; /* Bloqueo dinámico en celulares */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Evitar scroll global en escritorio y celular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 📱 CONTENEDOR MÓVIL CENTRADO EN ESCRITORIO (PHONE MOCKUP) */
+.phone-frame-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: var(--background-grid);
+  background-size: 24px 24px;
+  background-color: var(--background);
+  transition: background-color var(--transition-normal);
+}
+
+/* Fondo difuminado decorativo detrás del teléfono en escritorio */
+.phone-ambient-blur {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(130, 10, 209, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.phone-mockup {
+  position: relative;
+  z-index: 10;
+  max-width: 420px;
+  width: 100%;
+  height: 90vh; /* Se escala automáticamente en pantallas de laptops pequeñas */
+  max-height: 860px;
+  min-height: 580px;
+  border-radius: 44px;
+  border: 12px solid #16181A;
+  background-color: var(--background);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme="light"] .phone-mockup {
+  border-color: #E2E8F0;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* La pestaña/Notch física del iPhone/Android moderno */
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 24px;
+  background: #16181A;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  z-index: 1001;
+}
+
+[data-theme="light"] .phone-notch {
+  background: #E2E8F0;
+}
+
+/* Zona de Visualización del Teléfono */
+.phone-viewport {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 16px 80px 16px; /* Padding superior para el notch, inferior para el nav flotante */
+  scroll-behavior: smooth;
+}
+
+/* Scrollbars fluidos del visor móvil */
+.phone-viewport::-webkit-scrollbar {
+  width: 4px;
+}
+.phone-viewport::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 2px;
+}
+
+/* 🗺️ RESPONSIVIDAD: Teléfono nativo a pantalla completa en dispositivos móviles */
+@media (max-width: 768px) {
+  body {
+    overflow: hidden; /* Cierre absoluto del scroll exterior en el celular */
+    height: 100%;
+    height: 100dvh;
+  }
+  .phone-frame-wrapper {
+    background: var(--background);
+    height: 100%;
+    height: 100dvh;
+  }
+  .phone-ambient-blur {
+    display: none;
+  }
+  .phone-mockup {
+    max-width: 100%;
+    height: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .phone-notch {
+    display: none;
+  }
+  .phone-viewport {
+    padding: 16px 12px 76px 12px;
+  }
+}
+
+
+/* 🏠 BARRA DE NAVEGACIÓN TÁCTIL INFERIOR (BOTTOM FLOATING TAB BAR) */
+.phone-bottom-nav {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 60px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px; /* Pill-shaped */
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+}
+
+.phone-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  gap: 3px;
+  height: 100%;
+  border-radius: 9999px;
+  transition: all var(--transition-fast);
+}
+
+.phone-nav-icon {
+  font-size: 1.15rem;
+  transition: transform var(--transition-fast);
+}
+
+.phone-nav-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.phone-nav-item.active {
+  color: var(--accent-primary);
+}
+
+.phone-nav-item.active .phone-nav-icon {
+  transform: scale(1.2) translateY(-2px);
+}
+
+/* 🎨 COMPONENTES FINTECH NUDS */
+
+/* Tarjetas Redondeadas Premium (Glass panels) */
+.glass-panel, .glass-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 20px; /* Bordes suaves */
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.glass-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--surface-border);
+  transform: none; /* Evitar saltos en scroll táctil móvil */
+}
+
+/* Botones en forma de Cápsula (Pill-shaped) */
+.btn-primary {
+  background: var(--accent-primary);
+  color: #FFFFFF !important;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 9999px; /* Pill */
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--accent-primary-hover);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-glow-purple);
+}
+
+.btn-secondary {
+  background: var(--surface-active);
+  color: var(--text-primary);
+  border: 1px solid var(--surface-border);
+  padding: 10px 20px;
+  border-radius: 9999px; /* Pill */
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-muted);
+}
+
+/* Inputs Fintech: Sin bordes rígidos, grandes tipografías numéricas */
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.form-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--surface-border);
+  color: var(--text-primary);
+  padding: 12px 4px 6px 4px;
+  border-radius: 0;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+/* Resaltar números grandes ingresados por el usuario */
+.form-input[type="number"] {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-bottom-color: var(--accent-primary);
+  box-shadow: none; /* No shadow halo */
+}
+
+/* Gradientes de Texto */
+.text-gradient {
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-violet) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #10B981 30%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Tipografía Numérica Precision */
+.mono-numbers {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+/* 🗓️ CRONOGRAMA DE PAGOS FLUIDO (DIVULGACIÓN PROGRESIVA) */
+.schedule-month-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 16px !important;
+  margin-bottom: 10px !important;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.schedule-month-card.active-month {
+  border-color: var(--accent-primary) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.month-header {
+  padding: 14px 16px !important;
+}
+
+.month-detail-viewport {
+  padding: 0 16px 16px 16px !important;
+  background: transparent !important;
+  border-top: 1px solid var(--surface-border) !important;
+}
+
+/* Animación global */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeInUp var(--transition-normal) forwards;
+}
+
+/* Cabeceras de Pantallas Independientes */
+.tab-screen-header {
+  margin-bottom: 20px;
+  animation: fadeInUp var(--transition-normal) forwards;
+  padding: 0 4px;
+  margin-top: 10px;
+}
+
+.tab-screen-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.tab-screen-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+

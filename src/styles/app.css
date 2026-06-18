@@ -1,0 +1,1252 @@
+        :root {
+          --color-background-primary: #FFFFFF;
+          --color-background-secondary: #F8FAFC;
+          --color-border-tertiary: #E2E8F0;
+        }
+
+        /* RESET & BODY LOCK */
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+          background-color: #080A0D;
+          color: #333333;
+          min-height: 100vh;
+          height: 100dvh;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* PHONE FRAME MOCKUP */
+        .phone-frame-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          height: 100dvh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #080A0D;
+          background-image: radial-gradient(circle at 50% 50%, #1A1D24 1px, transparent 1px);
+          background-size: 24px 24px;
+        }
+
+        .phone-mockup {
+          position: relative;
+          z-index: 10;
+          max-width: 1200px;
+          width: 95%;
+          height: 92vh;
+          max-height: 900px;
+          min-height: 600px;
+          border-radius: 24px;
+          border: 1px solid #E2E8F0;
+          background-color: #FFFFFF;
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: all 0.3s ease;
+        }
+
+        .phone-notch {
+          display: none; /* Oculto en escritorio */
+        }
+
+        .phone-viewport {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          padding: 24px;
+          background: #FFFFFF;
+        }
+
+        /* Ocultar barra de scroll interna en navegadores */
+        .phone-viewport::-webkit-scrollbar {
+          width: 0;
+          background: transparent;
+        }
+
+        @media (max-width: 768px) {
+          .phone-frame-wrapper {
+            background: #FFFFFF;
+          }
+          .phone-mockup {
+            max-width: 100%;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+          }
+          .phone-notch {
+            display: none;
+          }
+          .phone-viewport {
+            padding: 16px 12px calc(80px + env(safe-area-inset-bottom)) 12px;
+          }
+          .phone-bottom-nav {
+            padding-bottom: calc(14px + env(safe-area-inset-bottom));
+            height: calc(64px + env(safe-area-inset-bottom));
+            display: flex !important;
+          }
+        }
+
+        /* BARRA DE NAVEGACIÓN INFERIOR (BOTTOM TAB BAR) */
+        .phone-bottom-nav {
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          height: 64px;
+          padding: 8px 12px 14px 12px;
+          background: #F4E8FF;
+          z-index: 100;
+          box-shadow: 0 -4px 20px rgba(130, 10, 209, 0.06);
+        }
+
+        .phone-nav-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          color: #333333;
+          height: 100%;
+          transition: color 150ms ease;
+        }
+
+        .phone-nav-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 30px;
+          width: 52px;
+          border-radius: 20px;
+          transition: background-color 150ms ease, color 150ms ease;
+          color: #333333;
+        }
+
+        .phone-nav-label {
+          font-size: 10px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          margin-top: 4px;
+          color: #333333;
+          transition: color 150ms ease;
+        }
+
+        .phone-nav-item.active {
+          color: #820AD1;
+        }
+
+        .phone-nav-item.active .phone-nav-icon {
+          background-color: rgba(130, 10, 209, 0.12);
+          color: #820AD1;
+        }
+
+        .phone-nav-item.active .phone-nav-label {
+          color: #820AD1;
+        }
+
+        .phone-nav-icon svg {
+          stroke: currentColor;
+          width: 22px;
+          height: 22px;
+          transition: transform 250ms ease-out;
+        }
+
+        .phone-nav-item.active .phone-nav-icon svg {
+          animation: tabIconPulse 250ms ease-out;
+        }
+
+        @keyframes tabIconPulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+          100% { transform: scale(1); }
+        }
+
+        /* CONTENEDORES Y TARJETAS FINTECH MINIMALISTAS */
+        .screen-header {
+          margin-bottom: 20px;
+          padding: 4px 4px 0 4px;
+        }
+
+        .screen-title {
+          font-size: 1.35rem;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          color: #333333;
+        }
+
+        .screen-desc {
+          font-size: 0.8rem;
+          color: #6E7E8C;
+          margin-top: 2px;
+        }
+
+        .glass-card {
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          border-radius: 20px;
+          padding: 16px;
+          margin-bottom: 12px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
+
+        .glass-card:hover {
+          border-color: #CBD5E1;
+        }
+
+        /* PÍLDORAS Y BOTONES CÁPSULA (PILL-SHAPED) */
+        .btn-primary {
+          background: #820AD1;
+          color: #FFFFFF !important;
+          border: none;
+          padding: 14px 28px;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          transition: all 0.15s ease-out;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 4px 10px rgba(130, 10, 209, 0.2);
+        }
+
+        .btn-primary:hover {
+          background: #6F04B3;
+          transform: scale(1.01);
+        }
+
+        .btn-secondary {
+          background: #F8FAFC;
+          color: #333333;
+          border: 1px solid #E2E8F0;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.75rem;
+          cursor: pointer;
+          transition: all 0.15s ease-out;
+        }
+
+        .btn-secondary:hover {
+          background: #F1F5F9;
+          border-color: #CBD5E1;
+        }
+
+        .btn-danger-action {
+          color: #EF4444 !important;
+        }
+        .btn-danger-action:hover {
+          background: rgba(239, 68, 68, 0.05) !important;
+          border-color: rgba(239, 68, 68, 0.2) !important;
+        }
+
+        /* ENTRADAS FINTECH DE DISEÑO LIMPIO */
+        .form-group {
+          margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .form-label {
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: #8C96A3;
+        }
+
+        .form-input {
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid #E2E8F0;
+          color: #333333;
+          padding: 8px 4px 4px 4px;
+          font-size: 1.15rem;
+          font-weight: 600;
+          transition: all 0.15s ease-out;
+          border-radius: 0;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-bottom-color: #820AD1;
+        }
+
+        .form-row {
+          display: flex;
+          gap: 12px;
+        }
+
+        .flex-1 { flex: 1; }
+
+        /* LISTADO DE DEUDAS (TARJETAS DE DEUDA) */
+        .debt-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+        }
+
+        .debt-name {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #333333;
+          line-height: 1.2;
+        }
+
+        .debt-card-rate-badge {
+          background: #F4E8FF;
+          color: #820AD1;
+          padding: 3px 8px;
+          border-radius: 6px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          font-family: 'JetBrains Mono', monospace;
+        }
+
+        .debt-card-body {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 12px;
+        }
+
+        .debt-balance-lbl {
+          font-size: 0.75rem;
+          color: #8C96A3;
+        }
+
+        .debt-balance-val {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #333333;
+          font-family: 'JetBrains Mono', monospace;
+          letter-spacing: -0.04em;
+        }
+
+        .debt-min-payment {
+          font-size: 0.75rem;
+          color: #6E7E8C;
+        }
+
+        .debt-card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+          border-top: 1px dashed #E2E8F0;
+          padding-top: 10px;
+          margin-top: 4px;
+        }
+
+        .btn-xs {
+          padding: 4px 10px;
+          font-size: 0.7rem;
+          border-radius: 9999px;
+        }
+
+        /* ESTADO VACÍO (EMPTY STATE) */
+        .empty-state {
+          text-align: center;
+          padding: 40px 20px;
+          border: 1px dashed #CBD5E1;
+          border-radius: 20px;
+          margin-bottom: 16px;
+        }
+
+        .empty-icon {
+          font-size: 2rem;
+          margin-bottom: 12px;
+          display: block;
+        }
+
+        .empty-title {
+          font-size: 0.95rem;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+
+        .empty-text {
+          font-size: 0.78rem;
+          color: #8C96A3;
+          line-height: 1.4;
+          margin-bottom: 16px;
+        }
+
+        /* SOLAPA 2: ESTRATEGIA (SLIDER Y COMPARATIVAS) */
+        .accelerator-card {
+          background: #F4E8FF;
+          border-color: #E9D5FF;
+        }
+
+        .slider-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+
+        .slider-title {
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #820AD1;
+        }
+
+        .slider-value {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: #820AD1;
+          font-family: 'JetBrains Mono', monospace;
+        }
+
+        .acc-slider {
+          width: 100%;
+          height: 6px;
+          background: #E9D5FF;
+          border-radius: 9999px;
+          outline: none;
+          appearance: none;
+          margin-bottom: 12px;
+        }
+
+        .acc-slider::-webkit-slider-thumb {
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #820AD1;
+          cursor: pointer;
+        }
+
+        .acc-presets {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+
+        .acc-preset-btn {
+          background: #FFFFFF;
+          border: 1px solid #E9D5FF;
+          color: #820AD1;
+          padding: 4px 8px;
+          border-radius: 9999px;
+          font-size: 0.68rem;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.1s ease-out;
+        }
+
+        .acc-preset-btn:hover {
+          background: #F4E8FF;
+        }
+
+        .strat-selector-title {
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #8C96A3;
+          margin-bottom: 8px;
+          margin-top: 10px;
+          padding: 0 4px;
+        }
+
+        .strategy-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+
+        .strat-card-option {
+          border-radius: 20px;
+          border: 1px solid #E2E8F0;
+          padding: 14px;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          background: #FFFFFF;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 120px;
+        }
+
+        .strat-card-option.active {
+          background: #F4E8FF;
+          border-color: #820AD1;
+        }
+
+        .strat-card-option h4 {
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #333333;
+          line-height: 1.2;
+        }
+
+        .strat-card-option.active h4 {
+          color: #820AD1;
+        }
+
+        .strat-card-option p {
+          font-size: 0.65rem;
+          color: #6E7E8C;
+          line-height: 1.35;
+          margin-top: 6px;
+        }
+
+        .strat-indicator {
+          font-size: 0.65rem;
+          font-weight: bold;
+          text-transform: uppercase;
+          margin-top: auto;
+          padding-top: 8px;
+          color: #8C96A3;
+        }
+
+        .strat-card-option.active .strat-indicator {
+          color: #820AD1;
+        }
+
+        /* COMPARATIVE BEFORE/AFTER CARDS */
+        .comparison-cards-container {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .comparison-card {
+          background: var(--color-background-primary);
+          border: 0.5px solid var(--color-border-tertiary);
+          border-radius: 16px;
+          padding: 16px 18px;
+          margin-bottom: 12px;
+        }
+
+        .comparison-card:last-child {
+          margin-bottom: 0;
+        }
+
+        /* CARDS DE COMPARACIÓN INDIVIDUAL POR DEUDA */
+        .debt-comparison-card {
+          background: var(--color-background-primary);
+          border: 0.5px solid var(--color-border-tertiary);
+          border-radius: 16px;
+          padding: 16px 18px;
+          margin-bottom: 12px;
+        }
+
+        .debt-comparison-card:last-child {
+          margin-bottom: 0;
+        }
+
+        .debt-comparison-header {
+          font-size: 14px;
+          font-weight: 500;
+          color: #820AD1;
+          border-bottom: 0.5px solid var(--color-border-tertiary);
+          padding-bottom: 8px;
+          margin-bottom: 12px;
+          text-align: left;
+        }
+
+        .debt-comparison-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+
+        .debt-comparison-row:last-child {
+          margin-bottom: 0;
+        }
+
+        .debt-comparison-label {
+          font-size: 12px;
+          color: #8C96A3;
+          font-weight: 500;
+        }
+
+        .debt-comparison-values {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .debt-comparison-val-before {
+          font-size: 18px;
+          opacity: 0.45;
+          text-decoration: line-through;
+          color: #333333;
+        }
+
+        .debt-comparison-arrow {
+          color: #820AD1;
+          font-size: 14px;
+          padding: 0 4px;
+        }
+
+        .debt-comparison-val-after {
+          font-size: 22px;
+          font-weight: 500;
+          color: #820AD1;
+        }
+
+        .debt-comparison-pill {
+          background-color: #F4E8FF;
+          color: #820AD1;
+          border-radius: 20px;
+          padding: 3px 10px;
+          font-size: 11px;
+          font-weight: 500;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .comparison-card-label {
+          font-size: 12px;
+          color: #8C96A3;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+
+        .comparison-card-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .comparison-card-val-before {
+          font-size: 20px;
+          opacity: 0.5;
+          text-decoration: line-through;
+          color: #333333;
+        }
+
+        .comparison-card-arrow {
+          color: #820AD1;
+          font-size: 16px;
+        }
+
+        .comparison-card-val-after {
+          font-size: 26px;
+          font-weight: 500;
+          color: #820AD1;
+        }
+
+        .comparison-card-val-single {
+          font-size: 26px;
+          font-weight: 500;
+          color: #333333;
+        }
+
+        .comparison-card-pill {
+          background-color: #F4E8FF;
+          color: #820AD1;
+          border-radius: 20px;
+          padding: 3px 10px;
+          font-size: 12px;
+          font-weight: 500;
+          display: inline-flex;
+          align-items: center;
+          margin-left: auto;
+        }
+
+        /* TARJETAS COMPARATIVAS (SUMMARY CARDS) */
+        .comparison-title {
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #8C96A3;
+          margin-bottom: 8px;
+          padding: 0 4px;
+        }
+
+        .summary-card-premium {
+          border-radius: 20px;
+          overflow: hidden;
+          border: 1px solid #E2E8F0;
+          margin-bottom: 12px;
+        }
+
+        .summary-card-header {
+          background: #F4E8FF;
+          padding: 8px 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #E9D5FF;
+        }
+
+        .summary-card-header span {
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #820AD1;
+        }
+
+        .summary-card-body {
+          padding: 16px;
+          background: #FFFFFF;
+        }
+
+        .summary-metric-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+
+        .summary-metric-row:last-child {
+          margin-bottom: 0;
+          border-top: 1px dashed #F1F5F9;
+          padding-top: 8px;
+        }
+
+        .metric-lbl {
+          font-size: 0.78rem;
+          color: #6E7E8C;
+        }
+
+        .metric-val {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #333333;
+          font-family: 'JetBrains Mono', monospace;
+        }
+
+        .metric-val-saved {
+          color: #059669;
+          font-weight: bold;
+        }
+
+        .summary-card-inactive {
+          border-radius: 20px;
+          border: 1px solid #E2E8F0;
+          background: #FFFFFF;
+          padding: 16px;
+          margin-bottom: 12px;
+        }
+
+        .inactive-title {
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #8C96A3;
+          margin-bottom: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+
+        .btn-download-container {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 12px;
+        }
+
+        .btn-download-plan {
+          background: transparent;
+          border: 1px solid #820AD1;
+          color: #820AD1;
+          border-radius: 20px;
+          padding: 6px 16px;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-download-plan:hover {
+          background: #F4E8FF;
+        }
+
+        /* SOLAPA 3: PLAN DE PAGOS (TABLA) */
+        .plan-table-container {
+          overflow-x: auto;
+          overflow-y: auto;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          -webkit-overflow-scrolling: touch;
+          display: block;
+          max-height: 520px;
+          border: 1px solid #E2E8F0;
+          border-radius: 16px;
+          background: #FFFFFF;
+        }
+
+        .plan-table {
+          width: 100%;
+          min-width: 600px;
+          border-collapse: collapse;
+          font-size: 0.8rem;
+          text-align: left;
+          background: transparent;
+        }
+
+        .plan-table th {
+          background: transparent;
+          color: #64748B;
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 0.68rem;
+          letter-spacing: 0.05em;
+          padding: 12px 16px;
+          border-bottom: 1px solid #E2E8F0;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+
+        .plan-table td {
+          padding: 14px 16px;
+          border-bottom: 1px solid #F1F5F9;
+          color: #1E293B;
+          font-family: 'JetBrains Mono', monospace;
+          background: transparent;
+        }
+
+        .plan-table tr {
+          background: transparent;
+          transition: background 0.15s ease;
+        }
+
+        .plan-table tr:hover {
+          background: #FAFAFA;
+        }
+
+        .td-name {
+          font-family: 'Outfit', sans-serif !important;
+          font-weight: 600;
+          color: #0F172A;
+        }
+
+        .td-month {
+          font-weight: 600;
+          color: #64748B;
+        }
+
+        .td-month-grouped {
+          background: transparent !important;
+          font-weight: 600;
+          vertical-align: middle;
+          color: #64748B;
+          text-align: center;
+          border-right: 1px solid #F1F5F9;
+        }
+
+        .td-interest {
+          color: #EF4444;
+        }
+
+        .td-balance {
+          font-weight: 600;
+          color: #0F172A;
+        }
+
+        .abono-extra-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(5, 150, 105, 0.08);
+          color: #047857;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          font-family: 'JetBrains Mono', monospace;
+        }
+
+        .no-data-msg {
+          text-align: center;
+          padding: 40px 20px;
+          font-size: 0.8rem;
+          color: #8C96A3;
+        }
+
+        /* Hero Form State */
+        .hero-state-container {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .hero-title {
+          font-size: 22px;
+          font-weight: 800;
+          color: #333333;
+          margin-bottom: 6px;
+          line-height: 1.25;
+        }
+
+        .hero-subtitle {
+          font-size: 0.85rem;
+          color: #6E7E8C;
+          margin-bottom: 20px;
+          line-height: 1.4;
+        }
+
+        .hero-form-card {
+          padding: 14px !important;
+          border-color: #820AD1 !important;
+          background: #FAFAFA !important;
+        }
+
+        .hero-label {
+          font-size: 14px !important;
+        }
+
+        .hero-input {
+          height: 44px !important;
+          font-size: 1.1rem !important;
+          padding: 10px 4px 4px 4px !important;
+        }
+
+        /* Success Toast */
+        .success-toast {
+          position: absolute;
+          bottom: 80px;
+          left: 16px;
+          right: 16px;
+          background-color: #4f46e5;
+          color: #FFFFFF;
+          border-radius: 8px;
+          padding: 12px 16px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          z-index: 2000;
+          opacity: 0;
+          transform: translateY(20px);
+          pointer-events: none;
+          transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .success-toast.show {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
+        /* Tab Pulse & Indigo Icon styling */
+        @keyframes tabPulse {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.12);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        .pulse-animation {
+          animation: tabPulse 0.4s ease-in-out;
+        }
+
+        .indigo-icon svg {
+          stroke: #4f46e5 !important;
+          fill: rgba(79, 70, 229, 0.1) !important;
+        }
+
+        /* Floating Tooltip */
+        .tab-tooltip {
+          position: absolute;
+          bottom: 74px;
+          left: 50%;
+          transform: translateX(-50%) translateY(10px);
+          background-color: #1C1E24;
+          color: #FFFFFF;
+          padding: 8px 12px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          white-space: nowrap;
+          z-index: 2001;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.25s ease, transform 0.25s ease;
+          cursor: pointer;
+        }
+
+        .tab-tooltip::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-width: 6px;
+          border-style: solid;
+          border-color: #1C1E24 transparent transparent transparent;
+        }
+
+        .tab-tooltip.show {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+          pointer-events: auto;
+        }
+
+        /* LOGO & CURRENCY SELECTOR HEADER */
+        .app-global-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 24px 16px 8px 16px;
+          background: #FFFFFF;
+          border-bottom: 1px solid #E2E8F0;
+          z-index: 1000;
+          height: 60px;
+        }
+
+        .header-brand {
+          font-size: 0.85rem;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          color: #820AD1;
+        }
+
+        /* Currency Selector Styles */
+        .currency-selector-container {
+          position: relative;
+          display: inline-block;
+        }
+
+        .currency-selector-btn {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 700;
+          color: #333333;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 6px 8px;
+          border-radius: 6px;
+          transition: background 0.15s ease;
+        }
+
+        .currency-selector-btn:hover {
+          background: #F8FAFC;
+        }
+
+        .currency-dropdown {
+          position: absolute;
+          top: calc(100% + 4px);
+          right: 0;
+          width: 110px;
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          z-index: 2100;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(-5px);
+          transition: opacity 120ms ease, transform 120ms ease;
+          pointer-events: none;
+        }
+
+        .currency-dropdown.show {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
+        .currency-dropdown-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 12px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #333333;
+          cursor: pointer;
+          transition: background 0.1s ease;
+        }
+
+        .currency-dropdown-item:hover {
+          background: #F4E8FF;
+        }
+
+        .currency-dropdown-item.active {
+          background: #F4E8FF;
+          color: #820AD1;
+        }
+
+        .dropdown-flag-code {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .dropdown-check {
+          font-weight: 800;
+          color: #820AD1;
+        }
+
+        /* CLASES DE VISIBILIDAD DE DISPOSITIVO */
+        .desktop-only {
+          display: block;
+        }
+        .mobile-only {
+          display: none !important;
+        }
+
+        /* DISEÑO DE DOS COLUMNAS EN ESCRITORIO */
+        .desktop-grid-2col {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        /* ESTILOS DE TABS DE ESCRITORIO */
+        .desktop-nav-tabs {
+          display: none;
+        }
+
+        @media (min-width: 769px) {
+          .desktop-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 24px;
+            align-items: start;
+          }
+
+          .desktop-nav-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #F1F5F9;
+            padding: 4px;
+            border-radius: 9999px;
+            border: 1px solid #E2E8F0;
+          }
+
+          .desktop-nav-item {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #6E7E8C;
+            cursor: pointer;
+            transition: all 0.15s ease;
+          }
+
+          .desktop-nav-item:hover {
+            color: #820AD1;
+            background: rgba(130, 10, 209, 0.05);
+          }
+
+          .desktop-nav-item.active {
+            background: #820AD1;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 10px rgba(130, 10, 209, 0.15);
+          }
+
+          .desktop-nav-item:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: transparent !important;
+            color: #6E7E8C !important;
+          }
+
+          .phone-bottom-nav {
+            display: none !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .desktop-only {
+            display: none !important;
+          }
+          .mobile-only {
+            display: block;
+          }
+          .phone-frame-wrapper {
+            background: #FFFFFF;
+          }
+          .phone-mockup {
+            max-width: 100%;
+            height: 100%;
+            height: 100dvh;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+          }
+          .phone-notch {
+            display: none;
+          }
+          .app-global-header {
+            padding: 12px 12px 8px 12px;
+            height: 52px;
+          }
+          .phone-viewport {
+            padding: 16px 12px calc(80px + env(safe-area-inset-bottom)) 12px;
+          }
+
+          .strategy-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .debt-comparison-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+          }
+
+          .debt-comparison-values {
+            width: 100%;
+            flex-wrap: wrap;
+          }
+
+          .plan-table-container {
+            min-width: 0;
+          }
+        }
+
+/* Animación fadeIn global */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}

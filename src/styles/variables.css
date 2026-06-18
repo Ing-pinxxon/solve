@@ -1,0 +1,78 @@
+/* DEUDAZERO // NUBANK NuDS FINTECH TOKENS */
+
+:root {
+  /* Tipografías Geométricas de Nubank */
+  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Duraciones de transición */
+  --transition-fast: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Sombras planas elegantes */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.08);
+  --shadow-glow-purple: 0 0 16px rgba(130, 10, 209, 0.25);
+}
+
+/* TEMA OSCURO (Modo Oscuro Fintech Grafito Puro) */
+[data-theme="dark"] {
+  --background: hsl(220, 15%, 8%); /* Grafito puro, no saturado */
+  --background-grid: radial-gradient(circle at 50% 50%, hsl(220, 15%, 12%) 1px, transparent 1px);
+  
+  --surface: hsl(220, 12%, 12%); /* Carbón mate */
+  --surface-hover: hsl(220, 12%, 16%);
+  --surface-border: hsl(220, 10%, 18%);
+  --surface-active: hsl(220, 10%, 22%);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: hsl(220, 10%, 75%);
+  --text-muted: hsl(220, 8%, 50%);
+
+  /* Acento Único Morado Eléctrico Nubank */
+  --accent-primary: hsl(272, 85%, 52%); 
+  --accent-primary-hover: hsl(272, 85%, 58%);
+  --accent-emerald: hsl(150, 80%, 42%);
+  --accent-violet: hsl(260, 80%, 55%);
+  
+  --danger: hsl(350, 80%, 50%);
+  --warning: hsl(40, 90%, 50%);
+  --success: hsl(150, 80%, 42%);
+
+  /* Glassmorphism Condensado */
+  --glass-bg: rgba(20, 24, 33, 0.95);
+  --glass-border: hsl(220, 10%, 16%);
+  --glass-blur: blur(8px);
+}
+
+/* TEMA CLARO (Modo Claro Blanco Puro Fintech) */
+[data-theme="light"] {
+  --background: hsl(0, 0%, 100%); /* Blanco absoluto */
+  --background-grid: radial-gradient(circle at 50% 50%, hsl(220, 20%, 93%) 1px, transparent 1px);
+  
+  --surface: hsl(220, 20%, 97%); /* Gris tenue helado */
+  --surface-hover: hsl(220, 20%, 93%);
+  --surface-border: hsl(220, 15%, 88%);
+  --surface-active: hsl(220, 15%, 84%);
+
+  --text-primary: hsl(220, 15%, 12%); /* Casi negro */
+  --text-secondary: hsl(220, 10%, 40%); /* Gris pizarra */
+  --text-muted: hsl(220, 8%, 60%);
+
+  /* Acento Único Morado Eléctrico Nubank */
+  --accent-primary: hsl(272, 85%, 52%); 
+  --accent-primary-hover: hsl(272, 85%, 48%);
+  --accent-emerald: hsl(150, 70%, 35%); 
+  --accent-violet: hsl(260, 70%, 45%);
+  
+  --danger: hsl(350, 75%, 45%);
+  --warning: hsl(40, 85%, 42%);
+  --success: hsl(150, 70%, 35%);
+
+  /* Glassmorphism de Alta Nitidez */
+  --glass-bg: rgba(255, 255, 255, 0.96);
+  --glass-border: hsl(220, 15%, 88%);
+  --glass-blur: blur(6px);
+}
