@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as XLSXStyle from 'xlsx-js-style';
 import './styles/app.css';
-import { teaToMonthlyRate, calcMinPayment, simulatePayoff, PayoffDebt, PaymentRow } from './utils/payoff';
+import { calcMinPayment, simulatePayoff, PaymentRow } from './utils/payoff';
 
 // ==========================================
 // 1. ESTRUCTURAS DE DATOS Y TIPOS
@@ -37,7 +37,6 @@ function safeReadJSON<T>(key: string, fallback: T): T {
   try {
     return JSON.parse(raw) as T;
   } catch {
-    // Valor guardado como string plano (sin JSON.stringify) — retornar tal cual
     return raw as unknown as T;
   }
 }
@@ -366,8 +365,6 @@ function App() {
     [debts, strategy]
   );
 
-  const scenarioActive = reportWithStrategy;
-
   // Mapear cada deuda y extraer proyecciones desde la simulación global
   const individualDebtsProjections = useMemo(
     () => sortedDebtsForComparison.map((debt, index) => {
@@ -378,8 +375,8 @@ function App() {
     const monthsBefore = rowsBase.length > 0 ? rowsBase[rowsBase.length - 1].month : 0;
     const interestBefore = rowsBase.reduce((sum, r) => sum + r.interest, 0);
 
-    // B) scenarioActive: todas las deudas, accelerator activo
-    const rowsActive = scenarioActive.filter(r => r.debtId === debt.id);
+    // B) reportWithStrategy: todas las deudas, accelerator activo
+    const rowsActive = reportWithStrategy.filter(r => r.debtId === debt.id);
     const monthsAfter = rowsActive.length > 0 ? rowsActive[rowsActive.length - 1].month : 0;
     const interestAfter = rowsActive.reduce((sum, r) => sum + r.interest, 0);
 
