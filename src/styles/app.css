@@ -1250,3 +1250,163 @@
 .animate-fade-in {
   animation: fadeIn 0.25s ease-out forwards;
 }
+
+/* ==========================================================
+   AUTH + GATING (Fase 2)
+   ========================================================== */
+
+/* Botón "Iniciar sesión" en el header */
+.account-signin-btn {
+  background: rgba(130, 10, 209, 0.08);
+  color: #820AD1;
+  border: 0.5px solid rgba(130, 10, 209, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.account-signin-btn:hover { background: rgba(130, 10, 209, 0.15); }
+
+/* Menú de cuenta (avatar + dropdown) */
+.account-menu { position: relative; }
+.account-avatar-btn {
+  background: none; border: none; cursor: pointer; padding: 0;
+}
+.account-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #820AD1, #B14BE0);
+  color: #fff; font-weight: 700; font-size: 0.8rem;
+}
+.account-dropdown {
+  position: absolute; top: 38px; right: 0; z-index: 60;
+  min-width: 190px;
+  background: #fff; border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+  padding: 8px; opacity: 0; transform: translateY(-6px);
+  pointer-events: none; transition: all 0.15s ease;
+}
+.account-dropdown.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.account-dropdown-email {
+  font-size: 0.72rem; color: #64748B; padding: 6px 8px;
+  word-break: break-all; border-bottom: 0.5px solid var(--color-border-tertiary);
+  margin-bottom: 4px;
+}
+.account-sync-chip {
+  font-size: 0.66rem; padding: 3px 8px; border-radius: 6px; margin: 4px 0;
+  display: inline-block;
+}
+.account-sync-syncing { background: #FEF3C7; color: #92400E; }
+.account-sync-synced  { background: #DCFCE7; color: #166534; }
+.account-sync-offline { background: #FEE2E2; color: #991B1B; }
+.account-dropdown-item {
+  width: 100%; text-align: left; background: none; border: none;
+  padding: 8px; border-radius: 8px; cursor: pointer;
+  font-size: 0.78rem; color: #1E293B; font-weight: 500;
+}
+.account-dropdown-item:hover { background: #F1F5F9; }
+
+/* Modal de autenticación (overlay dentro del marco del teléfono) */
+.modal-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; animation: fadeIn 0.18s ease-out forwards;
+}
+.modal-card {
+  background: #fff; border-radius: 18px; padding: 22px;
+  width: 100%; max-width: 340px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  max-height: 92%; overflow-y: auto;
+}
+.auth-modal { position: relative; }
+.auth-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  background: none; border: none; font-size: 0.95rem; color: #94A3B8; cursor: pointer;
+}
+.auth-modal-title { font-size: 1.15rem; font-weight: 700; color: #1E293B; margin: 0 0 4px; }
+.auth-modal-reason { font-size: 0.78rem; color: #64748B; margin: 0 0 16px; }
+
+.auth-social { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 4px; }
+.auth-social-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 11px; border-radius: 10px;
+  border: 0.5px solid var(--color-border-tertiary); background: #fff;
+  font-size: 0.82rem; font-weight: 600; color: #1E293B; cursor: pointer;
+  transition: background 0.15s ease;
+}
+.auth-social-btn:hover { background: #F8FAFC; }
+.auth-social-btn:disabled { opacity: 0.6; cursor: default; }
+.auth-social-apple { background: #000; color: #fff; border-color: #000; }
+.auth-social-apple:hover { background: #1a1a1a; }
+
+.auth-divider {
+  display: flex; align-items: center; text-align: center;
+  color: #94A3B8; font-size: 0.72rem; margin: 14px 0;
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; flex: 1; height: 0.5px; background: var(--color-border-tertiary);
+}
+.auth-divider span { padding: 0 10px; }
+
+.auth-msg { font-size: 0.74rem; padding: 8px 10px; border-radius: 8px; margin: 8px 0; }
+.auth-msg-error { background: rgba(239,68,68,0.08); color: #DC2626; }
+.auth-msg-info  { background: rgba(34,197,94,0.10); color: #15803D; }
+
+.auth-modal-foot {
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+  margin-top: 16px; font-size: 0.74rem; color: #64748B; text-align: center;
+}
+.auth-link {
+  background: none; border: none; color: #820AD1; font-weight: 600;
+  cursor: pointer; font-size: 0.74rem; padding: 0;
+}
+.auth-link:hover { text-decoration: underline; }
+
+/* LockGate — sección bloqueada con overlay */
+.lockgate { position: relative; border-radius: 16px; overflow: hidden; }
+.lockgate-content {
+  filter: blur(5px); opacity: 0.55; pointer-events: none; user-select: none;
+}
+.lockgate-overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 8px; padding: 20px;
+  background: rgba(255,255,255,0.35);
+}
+.lockgate-lock { font-size: 1.6rem; }
+.lockgate-title { font-size: 0.92rem; font-weight: 700; color: #1E293B; margin: 0; }
+.lockgate-subtitle { font-size: 0.76rem; color: #475569; margin: 0; max-width: 240px; }
+.lockgate-cta { margin-top: 6px; padding: 10px 18px; font-size: 0.82rem; }
+
+/* LockBadge — candado inline */
+.lock-badge { font-size: 0.7rem; margin-left: 5px; opacity: 0.85; }
+
+/* Banner de sync (preview) */
+.sync-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, rgba(130,10,209,0.07), rgba(177,75,224,0.07));
+  border: 0.5px solid rgba(130,10,209,0.2);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 12px;
+}
+.sync-banner-text { flex: 1; font-size: 0.74rem; color: #4C1D70; line-height: 1.35; }
+.sync-banner-text strong { color: #820AD1; }
+.sync-banner-btn {
+  background: #820AD1; color: #fff; border: none; border-radius: 8px;
+  padding: 7px 12px; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+  white-space: nowrap;
+}
+.sync-banner-btn:hover { background: #6d08b0; }
+
+/* Teaser de ahorro bloqueado (Tab 2) */
+.savings-teaser {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(130,10,209,0.05);
+  border: 1px dashed rgba(130,10,209,0.3);
+  border-radius: 12px; padding: 12px; margin-top: 10px; cursor: pointer;
+}
+.savings-teaser-amount { font-weight: 800; color: #820AD1; font-size: 0.95rem; }
+.savings-teaser-text { flex: 1; font-size: 0.74rem; color: #475569; }

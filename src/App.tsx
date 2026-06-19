@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as XLSXStyle from 'xlsx-js-style';
 import './styles/app.css';
 import { calcMinPayment, simulatePayoff, PaymentRow } from './utils/payoff';
+import { Debt } from './types/debt';
+import { useAuth } from './auth/AuthContext';
+import { AuthModal } from './components/auth/AuthModal';
+import { AccountMenu } from './components/auth/AccountMenu';
+import { SyncBanner } from './components/auth/SyncBanner';
+import { LockGate } from './components/auth/LockGate';
+import { LockBadge } from './components/auth/LockBadge';
+import { useDebtSync } from './sync/useDebtSync';
+import type { RemotePreferences } from './repositories/PreferencesRepository';
 
 // ==========================================
 // 1. ESTRUCTURAS DE DATOS Y TIPOS
 // ==========================================
-interface Debt {
-  id: string;           // Creado vía crypto.randomUUID() o fallback
-  name: string;
-  balance: number;
-  annualRate: number;
-  installments?: number;
-  createdAt: number;
-}
+// El tipo Debt unificado vive en ./types/debt (compartido con repositorios y sync).
 
 // ==========================================
 // 2. LÓGICA DE CÁLCULO FINANCIERO (FUNCIONES PURAS)
@@ -115,14 +117,23 @@ function App() {
   // --- Estados Globales (useState + localStorage) ---
   const [debts, setDebts] = useState<Debt[]>(() => {
     const raw = safeReadJSON<any[]>('debts', []);
-    return raw.filter(
-      (d): d is Debt =>
-        d != null &&
-        typeof d.id === 'string' &&
-        typeof d.name === 'string' &&
-        typeof d.balance === 'number' && d.balance > 0 &&
-        typeof d.annualRate === 'number'
-    );
+    return raw
+      .filter(
+        (d): d is Debt =>
+          d != null &&
+          typeof d.id === 'string' &&
+          typeof d.name === 'string' &&
+          typeof d.balance === 'number' && d.balance > 0 &&
+          typeof d.annualRate === 'number'
+      )
+      .map((d) => ({
+        // Backfill de metadatos para datos legados (sin updatedAt/syncStatus)
+        ...d,
+        installments: typeof d.installments === 'number' ? d.installments : 0,
+        createdAt: d.createdAt ?? Date.now(),
+        updatedAt: d.updatedAt ?? d.createdAt ?? Date.now(),
+        syncStatus: d.syncStatus ?? 'synced',
+      }));
   });
 
   const [accelerator, setAccelerator] = useState<number>(() =>
@@ -144,6 +155,40 @@ function App() {
 
   const activeCurrency = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
   const currencySymbol = activeCurrency.symbol;
+
+  // --- Autenticación + gating freemium ---
+  const { user, isGuest, openAuthModal } = useAuth();
+
+  // Deudas visibles (excluye borrados lógicos) — base de toda la UI
+  const visibleDebts = useMemo(() => debts.filter(d => !d.deletedAt), [debts]);
+
+  // El invitado puede registrar 1 deuda; agregar más requiere cuenta
+  const canAddDebt = !isGuest || visibleDebts.length < 1;
+
+  // --- Sincronización (solo activa con sesión) ---
+  const [prefsUpdatedAt, setPrefsUpdatedAt] = useState<number>(() =>
+    safeReadJSON<number>('prefsUpdatedAt', 0)
+  );
+  const bumpPrefs = useCallback(() => setPrefsUpdatedAt(Date.now()), []);
+
+  const applyRemotePreferences = useCallback((p: RemotePreferences) => {
+    setCurrency(p.currency);
+    setAccelerator(p.monthlyAccelerator);
+    setStrategy(p.strategy);
+    setPrefsUpdatedAt(p.updatedAt);
+  }, []);
+
+  const { syncState } = useDebtSync({
+    user,
+    debts,
+    setDebts,
+    preferences: { currency, accelerator, strategy, updatedAt: prefsUpdatedAt },
+    applyRemotePreferences,
+  });
+
+  useEffect(() => {
+    localStorage.setItem('prefsUpdatedAt', String(prefsUpdatedAt));
+  }, [prefsUpdatedAt]);
 
   // Cerrar dropdown al hacer clic fuera o presionar Escape
   useEffect(() => {
@@ -266,7 +311,7 @@ function App() {
       return;
     }
 
-    const isFirstDebt = debts.length === 0;
+    const isFirstDebt = visibleDebts.length === 0;
 
     if (editingId) {
       // Editar
@@ -275,18 +320,24 @@ function App() {
         name: formName.trim(),
         balance,
         annualRate: rate,
-        installments: installmentsVal
+        installments: installmentsVal,
+        updatedAt: Date.now(),
+        syncStatus: 'pending'
       } : d));
       setEditingId(null);
     } else {
       // Crear
+      const now = Date.now();
       const newDebt: Debt = {
         id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
         name: formName.trim(),
         balance,
         annualRate: rate,
         installments: installmentsVal,
-        createdAt: Date.now()
+        createdAt: now,
+        updatedAt: now,
+        userId: user?.id,
+        syncStatus: 'pending'
       };
       setDebts(prev => [...prev, newDebt]);
 
@@ -333,14 +384,14 @@ function App() {
 
   // --- Ejecución de las Proyecciones Financieras ---
   const reportWithStrategy = useMemo(
-    () => simulatePayoff(debts, accelerator, strategy),
-    [debts, accelerator, strategy]
+    () => simulatePayoff(visibleDebts, accelerator, strategy),
+    [visibleDebts, accelerator, strategy]
   );
 
   // Escenarios globales para proyecciones por deuda (efecto cascada)
   const scenarioBase = useMemo(
-    () => simulatePayoff(debts, 0, strategy),
-    [debts, strategy]
+    () => simulatePayoff(visibleDebts, 0, strategy),
+    [visibleDebts, strategy]
   );
 
   // Agrupar filas contiguas por mes para la tabla del plan de pagos
@@ -359,10 +410,10 @@ function App() {
 
   // Ordenar deudas según estrategia activa para la comparación por deuda
   const sortedDebtsForComparison = useMemo(
-    () => [...debts].sort((a, b) =>
+    () => [...visibleDebts].sort((a, b) =>
       strategy === 'avalanche' ? b.annualRate - a.annualRate : a.balance - b.balance
     ),
-    [debts, strategy]
+    [visibleDebts, strategy]
   );
 
   // Mapear cada deuda y extraer proyecciones desde la simulación global
@@ -397,6 +448,23 @@ function App() {
   }),
     [sortedDebtsForComparison, scenarioBase, reportWithStrategy, accelerator]
   );
+
+  // Teaser de ahorro para invitados: simula un abono de muestra sobre su deuda.
+  const teaserSavings = useMemo(() => {
+    if (!isGuest || visibleDebts.length === 0) return null;
+    const sample = activeCurrency.presets[0] || 0;
+    if (sample <= 0) return null;
+    const withSample = simulatePayoff(visibleDebts, sample, strategy);
+    const baseMonths = scenarioBase.length ? scenarioBase[scenarioBase.length - 1].month : 0;
+    const sampleMonths = withSample.length ? withSample[withSample.length - 1].month : 0;
+    const baseInterest = scenarioBase.reduce((s, r) => s + r.interest, 0);
+    const sampleInterest = withSample.reduce((s, r) => s + r.interest, 0);
+    return {
+      sample,
+      monthsSaved: Math.max(0, baseMonths - sampleMonths),
+      interestSaved: Math.max(0, baseInterest - sampleInterest),
+    };
+  }, [isGuest, visibleDebts, strategy, scenarioBase, activeCurrency]);
 
   // Descargar plan de pagos en formato XLSX con diseño y estilos avanzados
   const downloadPlan = (planRows: PaymentRow[]) => {
@@ -821,7 +889,16 @@ function App() {
 
   const confirmImport = () => {
     if (!importPreview) return;
-    setDebts(importPreview.debts);
+    const now = Date.now();
+    // Estampar metadatos para que la importación se sincronice al iniciar sesión
+    setDebts(importPreview.debts.map(d => ({
+      ...d,
+      installments: typeof d.installments === 'number' ? d.installments : 0,
+      createdAt: d.createdAt ?? now,
+      updatedAt: now,
+      userId: user?.id,
+      syncStatus: 'pending' as const,
+    })));
     setShowImportModal(false);
     setImportPreview(null);
     setImportError(null);
@@ -829,7 +906,11 @@ function App() {
 
   const confirmDelete = () => {
     if (!deleteConfirmId) return;
-    setDebts(prev => prev.filter(d => d.id !== deleteConfirmId));
+    // Borrado lógico (soft delete) para que la baja se propague entre dispositivos
+    const now = Date.now();
+    setDebts(prev => prev.map(d => d.id === deleteConfirmId
+      ? { ...d, deletedAt: now, updatedAt: now, syncStatus: 'pending' as const }
+      : d));
     if (editingId === deleteConfirmId) {
       setShowForm(false);
       setEditingId(null);
@@ -840,10 +921,12 @@ function App() {
   // Auxiliares locales para mutar preferencias de rango
   function handleAcceleratorChange(val: number) {
     setAccelerator(val);
+    bumpPrefs();
   }
 
   function handleStrategyChange(strat: 'avalanche' | 'snowball') {
     setStrategy(strat);
+    bumpPrefs();
   }
 
   return (
@@ -874,7 +957,7 @@ function App() {
             <button 
               type="button" 
               className={`desktop-nav-item ${activeTab === 2 ? 'active' : ''}`}
-              disabled={debts.length === 0}
+              disabled={visibleDebts.length === 0}
               onClick={() => {
                 setTooltipVisible(false);
                 setActiveTab(2);
@@ -885,7 +968,7 @@ function App() {
             <button 
               type="button" 
               className={`desktop-nav-item ${activeTab === 3 ? 'active' : ''}`}
-              disabled={debts.length === 0}
+              disabled={visibleDebts.length === 0}
               onClick={() => {
                 setTooltipVisible(false);
                 setActiveTab(3);
@@ -895,16 +978,20 @@ function App() {
             </button>
           </div>
           
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className="currency-selector-container" ref={currencyRef}>
             <button
               type="button"
               className="currency-selector-btn"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              onClick={() => isGuest
+                ? openAuthModal('Inicia sesión para cambiar de moneda')
+                : setDropdownOpen(!dropdownOpen)}
             >
               <span className={`fi fi-${activeCurrency.countryCode}`} style={{ width: '1.2em', display: 'inline-block', borderRadius: '2px', marginRight: '4px' }}></span>
               <span>{activeCurrency.code}</span>
+              {isGuest && <LockBadge />}
             </button>
-            
+
             <div className={`currency-dropdown ${dropdownOpen ? 'show' : ''}`}>
               {CURRENCIES.map(c => (
                 <div
@@ -913,6 +1000,7 @@ function App() {
                   onClick={() => {
                     setCurrency(c.code);
                     localStorage.setItem('currency', c.code);
+                    bumpPrefs();
                     setDropdownOpen(false);
                   }}
                 >
@@ -925,6 +1013,8 @@ function App() {
               ))}
             </div>
           </div>
+          <AccountMenu syncState={syncState} />
+          </div>
         </div>
 
         {/* CONTENEDOR INTERNO DE VISTAS (SCROLLABLE VIEWPORT) */}
@@ -935,7 +1025,7 @@ function App() {
              ========================================== */}
           {activeTab === 1 && (
             <div className="animate-fade-in">
-              {debts.length === 0 ? (
+              {visibleDebts.length === 0 ? (
                 /* CAMBIO 3: HERO STATE */
                 <div className="hero-state-container">
                   <h2 className="hero-title">Registra tu primera deuda</h2>
@@ -1012,21 +1102,27 @@ function App() {
                     <p className="screen-desc">Registra y edita tus tarjetas o préstamos</p>
                   </div>
 
+                  <SyncBanner />
+
                   {/* Botones de respaldo de datos */}
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       className="btn-secondary btn-xs"
-                      onClick={exportData}
+                      onClick={() => isGuest
+                        ? openAuthModal('Inicia sesión para exportar tus datos')
+                        : exportData()}
                     >
-                      ↓ Exportar datos
+                      ↓ Exportar datos {isGuest && <LockBadge />}
                     </button>
                     <button
                       type="button"
                       className="btn-secondary btn-xs"
-                      onClick={() => importDataRef.current?.click()}
+                      onClick={() => isGuest
+                        ? openAuthModal('Inicia sesión para importar datos')
+                        : importDataRef.current?.click()}
                     >
-                      ↑ Importar datos
+                      ↑ Importar datos {isGuest && <LockBadge />}
                     </button>
                     <input
                       ref={importDataRef}
@@ -1133,17 +1229,20 @@ function App() {
                         <button
                           type="button"
                           className="btn-primary"
-                          onClick={handleOpenAddForm}
+                          onClick={() => canAddDebt
+                            ? handleOpenAddForm()
+                            : openAuthModal('Crea una cuenta para agregar más deudas')}
                           style={{ marginBottom: '16px' }}
                         >
                           <span style={{ fontSize: '1.1rem' }}>+</span> Registrar Nueva Deuda
+                          {!canAddDebt && <LockBadge />}
                         </button>
                       )}
                     </div>
 
                     {/* Panel Derecho: Listado de deudas */}
                     <div>
-                      {debts.map((debt) => (
+                      {visibleDebts.map((debt) => (
                         <div key={debt.id} className="glass-card">
                           <div className="debt-card-header">
                             <h4 className="debt-name">{debt.name}</h4>
@@ -1207,7 +1306,7 @@ function App() {
                 <p className="screen-desc">Acelera tus pagos y compara las proyecciones</p>
               </div>
 
-              {debts.length === 0 ? (
+              {visibleDebts.length === 0 ? (
                 <div className="glass-card" style={{ textAlign: 'center', color: '#8C96A3', fontSize: '0.8rem' }}>
                   Ingresa deudas en el Paso 1 para simular tus ahorros.
                 </div>
@@ -1215,7 +1314,38 @@ function App() {
                 <div className="desktop-grid-2col">
                   {/* Panel Izquierdo: Configuración de Estrategia */}
                   <div>
-                    {/* Control Acelerador Mensual Extra */}
+                    {/* Control Acelerador Mensual Extra — bloqueado para invitados */}
+                    {isGuest ? (
+                      <div className="glass-card accelerator-card">
+                        <div className="slider-header">
+                          <span className="slider-title">Abono Extra Mensual</span>
+                          <LockBadge />
+                        </div>
+                        {teaserSavings ? (
+                          <div
+                            className="savings-teaser"
+                            onClick={() => openAuthModal('Inicia sesión para simular tus abonos')}
+                          >
+                            <span style={{ fontSize: '1.3rem' }}>💸</span>
+                            <span className="savings-teaser-text">
+                              Con un abono de <strong>{currencySymbol}{formatCurrency(teaserSavings.sample)}</strong>/mes
+                              ahorrarías <span className="savings-teaser-amount">{currencySymbol}{formatCurrency(teaserSavings.interestSaved)}</span>
+                              {teaserSavings.monthsSaved > 0 && <> y <strong>{teaserSavings.monthsSaved} meses</strong></>}.
+                              <br />🔒 Inicia sesión para simularlo.
+                            </span>
+                          </div>
+                        ) : (
+                          <div
+                            className="savings-teaser"
+                            onClick={() => openAuthModal('Inicia sesión para simular tus abonos')}
+                          >
+                            <span className="savings-teaser-text">
+                              🔒 Inicia sesión para simular abonos extra y ver cuánto ahorras.
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
                     <div className="glass-card accelerator-card">
                       <div className="slider-header">
                         <span className="slider-title">Abono Extra Mensual</span>
@@ -1230,7 +1360,7 @@ function App() {
                         value={accelerator}
                         onChange={(e) => handleAcceleratorChange(Number(e.target.value))}
                       />
-                      
+
                       {/* Presets de Acelerador */}
                       <div className="acc-presets">
                         {activeCurrency.presets.map((val) => (
@@ -1255,6 +1385,7 @@ function App() {
                         )}
                       </div>
                     </div>
+                    )}
 
                     {/* Selector de Filosofía */}
                     <h3 className="strat-selector-title">Filosofía de Amortización</h3>
@@ -1360,12 +1491,17 @@ function App() {
                 <p className="screen-desc">Tu agenda mes a mes de amortización</p>
               </div>
 
-              {debts.length === 0 ? (
+              {visibleDebts.length === 0 ? (
                 <div className="glass-card" style={{ textAlign: 'center', color: '#8C96A3', fontSize: '0.8rem' }}>
                   Registra créditos en el Paso 1 para generar tu plan cronológico.
                 </div>
               ) : (
-                <>
+                <LockGate
+                  locked={isGuest}
+                  title="Ve tu plan de pagos completo"
+                  subtitle="Tu cronograma mes a mes y la descarga en Excel se desbloquean con tu cuenta."
+                  reason="Inicia sesión para ver tu plan completo"
+                >
                   <div className="btn-download-container">
                     <button
                       type="button"
@@ -1430,7 +1566,7 @@ function App() {
                       </table>
                     )}
                   </div>
-                </>
+                </LockGate>
               )}
             </div>
           )}
@@ -1462,7 +1598,7 @@ function App() {
                 ¿Restaurar datos?
               </h3>
               <p style={{ fontSize: '0.8rem', color: '#6E7E8C', marginBottom: '16px', lineHeight: 1.4 }}>
-                Se reemplazarán tus {debts.length} deuda(s) actuales con {importPreview.count} deuda(s)
+                Se reemplazarán tus {visibleDebts.length} deuda(s) actuales con {importPreview.count} deuda(s)
                 del archivo. Esta acción no se puede deshacer.
               </p>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -1510,6 +1646,9 @@ function App() {
           </div>
         )}
 
+        {/* Modal de autenticación (login / registro) */}
+        <AuthModal />
+
         {/* 🏠 NAVEGACIÓN TÁCTIL MÓVIL (BOTTOM TAB BAR) */}
         <div className="phone-bottom-nav">
           <button
@@ -1534,11 +1673,11 @@ function App() {
             className={`phone-nav-item ${activeTab === 2 ? 'active' : ''} ${pulseActive ? 'pulse-animation' : ''}`}
             onClick={() => {
               setTooltipVisible(false);
-              if (debts.length > 0) setActiveTab(2);
+              if (visibleDebts.length > 0) setActiveTab(2);
             }}
-            disabled={debts.length === 0}
+            disabled={visibleDebts.length === 0}
             style={{ 
-              opacity: debts.length === 0 ? 0.35 : 1,
+              opacity: visibleDebts.length === 0 ? 0.35 : 1,
               transition: 'all 0.2s ease-out'
             }}
           >
@@ -1557,10 +1696,10 @@ function App() {
             className={`phone-nav-item ${activeTab === 3 ? 'active' : ''}`}
             onClick={() => {
               setTooltipVisible(false);
-              if (debts.length > 0) setActiveTab(3);
+              if (visibleDebts.length > 0) setActiveTab(3);
             }}
-            disabled={debts.length === 0}
-            style={{ opacity: debts.length === 0 ? 0.35 : 1 }}
+            disabled={visibleDebts.length === 0}
+            style={{ opacity: visibleDebts.length === 0 ? 0.35 : 1 }}
           >
             <span className="phone-nav-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

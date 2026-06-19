@@ -1,6 +1,15 @@
 -- DEUDAS//ZERO — Supabase Schema
 -- Ejecutar en Supabase SQL Editor
 
+-- ──────────────────────────────────────────────────────────────
+-- Reconciliación: si antes creaste tablas con nombres en español
+-- (deudas / preferencias_de_usuario), bórralas ANTES de ejecutar
+-- este schema canónico en inglés. Estaban vacías, no hay pérdida.
+-- Descomenta las dos líneas siguientes una sola vez:
+--   drop table if exists public.deudas cascade;
+--   drop table if exists public.preferencias_de_usuario cascade;
+-- ──────────────────────────────────────────────────────────────
+
 create extension if not exists "uuid-ossp";
 
 create table if not exists public.debts (

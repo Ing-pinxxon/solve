@@ -21,14 +21,44 @@ SupabaseDebtRepository.syncFromRemote() → pull remoto → last-write-wins → 
 Last-write-wins por `updatedAt` (timestamp ms del cliente). Aceptable para finanzas
 personales donde conflictos simultáneos en dos dispositivos son raros.
 
-## Migración desde localStorage (pendiente — Fase 2)
-1. Al primer login exitoso, leer debts de localStorage
-2. Añadir userId del usuario autenticado
-3. Upsert masivo a Supabase
-4. Limpiar localStorage
+## Modelo de acceso — Preview freemium (Fase 2)
+La app funciona sin cuenta (modo invitado/preview), pero la mayoría de funciones se
+desbloquean al iniciar sesión:
 
-## Pendiente — Fase 2
-- Pantalla de login/registro (Auth UI de Supabase)
-- Hook useAuth() para estado de sesión global
-- Migración automática al primer login
-- Capacitor plugin para SQLite (reemplazar Dexie en producción nativa)
+| Función | Invitado (preview) | Con sesión |
+|---|---|---|
+| Registrar deudas | 1 deuda | Ilimitadas |
+| Ahorro estimado (Tab 1–2) | Visible | Visible |
+| Selector de monedas | Fijo COP 🔒 | Habilitado |
+| Escenarios de abono (acelerador) | Teaser bloqueado 🔒 | Habilitado |
+| Plan de pagos completo (Tab 3) | LockGate borroso 🔒 | Habilitado |
+| Export / Import JSON | 🔒 | Habilitado |
+| Sincronización multi-dispositivo | — | Activa |
+
+Gating centralizado en `useAuth()` (`isGuest`, `openAuthModal`, `requireAuth`).
+Componentes: `LockGate` (secciones), `LockBadge` (controles), `SyncBanner` (CTA),
+`AuthModal` (login/registro), `AccountMenu` (header).
+
+## Autenticación
+- Proveedores: **Email + contraseña, Google, Apple** (Supabase Auth).
+- `src/auth/AuthContext.tsx`: `AuthProvider` + `useAuth()`. Sesión persistida por
+  `@supabase/supabase-js` (`persistSession`/`autoRefreshToken`), retorno OAuth vía
+  `detectSessionInUrl`.
+- Config manual en el dashboard de Supabase: habilitar proveedores + Redirect URLs
+  (`http://localhost:3000` en dev). Apple requiere Apple Developer de pago.
+
+## Sincronización (`src/sync/useDebtSync.ts`)
+Activa solo con sesión. App.tsx (useState) sigue siendo la fuente de verdad:
+1. **Primer login:** estampa `userId` en las deudas locales, las sube (upsert) y luego
+   mezcla lo remoto (`mergeByUpdatedAt`). No borra el cache local.
+2. **Al enfocar / `visibilitychange`:** pull remoto → merge → estado.
+3. **Tras editar (debounce 1.5s):** push de las deudas `syncStatus==='pending'`.
+- Conflictos: last-write-wins por `updatedAt` (`src/sync/mergeDebts.ts`, con tests).
+- Borrado lógico (`deletedAt`) para propagar bajas entre dispositivos.
+- Preferencias (moneda/acelerador/estrategia) en `user_preferences` vía
+  `PreferencesRepository`, también LWW por `updatedAt`.
+
+## Pendiente — Fase 3
+- OAuth nativo en Capacitor (deep-links + adaptador de storage de sesión).
+- Capacitor plugin para SQLite (reemplazar Dexie en producción nativa).
+- Realtime opcional (Supabase Realtime) para sync instantánea.

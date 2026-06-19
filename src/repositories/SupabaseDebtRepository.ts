@@ -2,37 +2,42 @@ import { supabase } from '../lib/supabase';
 import { Debt } from '../types/debt';
 import { IDebtRepository, LocalDebtRepository } from './DebtRepository';
 
+/** Mapea una Debt del dominio a la fila de la tabla `debts` (snake_case). */
+export function debtToRow(debt: Debt) {
+  return {
+    id: debt.id,
+    user_id: debt.userId,
+    name: debt.name,
+    balance: debt.balance,
+    annual_rate: debt.annualRate,
+    installments: debt.installments,
+    created_at: debt.createdAt,
+    updated_at: debt.updatedAt,
+    deleted_at: debt.deletedAt ?? null,
+  };
+}
+
+/** Mapea una fila de `debts` (snake_case) a la Debt del dominio. */
+export function rowToDebt(row: any): Debt {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    name: row.name,
+    balance: Number(row.balance),
+    annualRate: Number(row.annual_rate),
+    installments: row.installments,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    deletedAt: row.deleted_at ?? undefined,
+    syncStatus: 'synced',
+  };
+}
+
 export class SupabaseDebtRepository implements IDebtRepository {
   private local = new LocalDebtRepository();
 
-  private toRow(debt: Debt) {
-    return {
-      id: debt.id,
-      user_id: debt.userId,
-      name: debt.name,
-      balance: debt.balance,
-      annual_rate: debt.annualRate,
-      installments: debt.installments,
-      created_at: debt.createdAt,
-      updated_at: debt.updatedAt,
-      deleted_at: debt.deletedAt ?? null,
-    };
-  }
-
-  private fromRow(row: any): Debt {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      name: row.name,
-      balance: Number(row.balance),
-      annualRate: Number(row.annual_rate),
-      installments: row.installments,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-      deletedAt: row.deleted_at ?? undefined,
-      syncStatus: 'synced',
-    };
-  }
+  private toRow = debtToRow;
+  private fromRow = rowToDebt;
 
   async getAll(): Promise<Debt[]> {
     const local = await this.local.getAll();
