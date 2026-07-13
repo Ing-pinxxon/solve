@@ -1,4 +1,16 @@
-# Arquitectura DEUDAS//ZERO — Offline-First con Supabase
+# Arquitectura $olve — Offline-First con Supabase
+
+> **Marca:** el producto se llama **$olve** (la `S` es `$`). "DEUDAS//ZERO" queda como
+> claim/lema interno hasta completar el rebrand en la UI.
+
+## Diseño — Claymorphism (2026-06-20)
+Sistema visual "plastilina": fondo pastel lavanda, tarjetas/botones inflados con
+esquinas grandes y **doble sombra** (externa suave + insets claro/oscuro). Tokens en
+`src/styles/app.css` `:root` (`--clay-*`): paleta multicolor pastel (morado, menta,
+coral, azul, ámbar), radios (`--r-sm..xl`) y recetas de sombra (`--clay-shadow`,
+`--clay-shadow-sm`, `--clay-press`, `--clay-shadow-purple/mint`). `app.css` es la única
+hoja activa (variables.css/globals.css están muertos).
+
 
 ## Stack
 - Frontend: React 19 + TypeScript + Capacitor (wrapper nativo)

@@ -43,6 +43,27 @@ function safeReadJSON<T>(key: string, fallback: T): T {
   }
 }
 
+// Mapeo de locale (es-CO, en-US, es-MX, etc.) a moneda
+function detectCurrencyByLocale(): string | null {
+  const locale = navigator.language || navigator.languages?.[0] || '';
+  const [lang, country] = locale.split('-');
+
+  // Mapeo directo por locale completo
+  const localeMap: Record<string, string> = {
+    'es-CO': 'COP', 'es-MX': 'MXN', 'es-AR': 'ARS', 'es-CL': 'CLP',
+    'pt-BR': 'BRL', 'en-US': 'USD', 'en-GB': 'USD',
+  };
+
+  if (localeMap[locale]) return localeMap[locale];
+
+  // Fallback: solo por código de país
+  const countryMap: Record<string, string> = {
+    CO: 'COP', MX: 'MXN', AR: 'ARS', CL: 'CLP', BR: 'BRL', US: 'USD',
+  };
+
+  return country ? countryMap[country.toUpperCase()] || null : null;
+}
+
 export const CURRENCIES: CurrencyConfig[] = [
   {
     code: 'COP',
@@ -152,6 +173,18 @@ function App() {
   );
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const currencyRef = useRef<HTMLDivElement>(null);
+
+  // Detectar moneda por locale del navegador en el primer render (si no está en localStorage)
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem('currency');
+    if (savedCurrency) return; // Ya hay valor guardado, no detectar
+
+    const detected = detectCurrencyByLocale();
+    if (detected && detected !== 'COP') {
+      setCurrency(detected);
+      localStorage.setItem('currency', JSON.stringify(detected));
+    }
+  }, []);
 
   const activeCurrency = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
   const currencySymbol = activeCurrency.symbol;
@@ -940,7 +973,7 @@ function App() {
 
         {/* TOP BAR / LOGO & CURRENCY SELECTOR */}
         <div className="app-global-header">
-          <div className="header-brand">DEUDAS//ZERO</div>
+          <div className="header-brand"><span className="brand-dollar">$</span>olve</div>
 
           {/* Menú de navegación superior para Escritorio/Tablet */}
           <div className="desktop-nav-tabs desktop-only">
