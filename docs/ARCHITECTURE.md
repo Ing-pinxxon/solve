@@ -1,7 +1,9 @@
 # Arquitectura $olve — Offline-First con Supabase
 
-> **Marca:** el producto se llama **$olve** (la `S` es `$`). "DEUDAS//ZERO" queda como
-> claim/lema interno hasta completar el rebrand en la UI.
+> **Marca:** el producto se llama **$olve** (la `S` es `$`). Rebrand aplicado en toda la
+> UI, título, manifest y exportaciones (2026-07-15). La única referencia vieja que queda es
+> el nombre de la BD local de Dexie (`DeudaZeroDB` en `src/utils/db.ts`): renombrarla
+> descartaría datos locales; se migrará en la fase Capacitor.
 
 ## Diseño — Claymorphism (2026-06-20)
 Sistema visual "plastilina": fondo pastel lavanda, tarjetas/botones inflados con

@@ -1,4 +1,4 @@
--- DEUDAS//ZERO — Supabase Schema
+-- $olve — Supabase Schema
 -- Ejecutar en Supabase SQL Editor
 
 -- ──────────────────────────────────────────────────────────────
@@ -44,14 +44,13 @@ create policy "Users can delete own debts" on public.debts for delete using (aut
 create policy "Users can view own prefs"   on public.user_preferences for select using (auth.uid() = user_id);
 create policy "Users can insert own prefs" on public.user_preferences for insert with check (auth.uid() = user_id);
 create policy "Users can update own prefs" on public.user_preferences for update using (auth.uid() = user_id);
+create policy "Users can delete own prefs" on public.user_preferences for delete using (auth.uid() = user_id);
 
 create index if not exists idx_debts_user_id    on public.debts(user_id);
 create index if not exists idx_debts_updated_at on public.debts(user_id, updated_at desc);
 create index if not exists idx_debts_active      on public.debts(user_id) where deleted_at is null;
 
-create or replace function public.get_debts_since(p_user_id uuid, p_since bigint)
-returns setof public.debts language sql security definer as $$
-  select * from public.debts
-  where user_id = p_user_id and updated_at > p_since
-  order by updated_at asc;
-$$;
+-- Fix de seguridad: el RPC get_debts_since era `security definer` y filtraba por
+-- parámetro, lo que permitía consultar deudas de otro usuario. No se usa desde la
+-- app (el pull usa select directo protegido por RLS), así que se elimina.
+drop function if exists public.get_debts_since(uuid, bigint);

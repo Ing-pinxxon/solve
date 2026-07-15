@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Logotipo Simplificado Móvil */}
         <div className="header-logo" onClick={() => window.location.reload()}>
           <span className="logo-spark">⚡</span>
-          <span className="logo-text text-gradient">D//ZERO</span>
+          <span className="logo-text text-gradient">$olve</span>
         </div>
 
         {/* Acciones Compactadas en Píldoras en una Sola Fila */}

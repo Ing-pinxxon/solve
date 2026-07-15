@@ -52,7 +52,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ activeTheme,
           <div className="onboarding-left">
             <div className="logo-area">
               <span className="logo-icon">⚡</span>
-              <span className="logo-text text-gradient">DEUDAS//ZERO</span>
+              <span className="logo-text text-gradient">$olve</span>
             </div>
             
             <h1 className="welcome-title">Bienvenido a tu Libertad Financiera</h1>

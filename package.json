@@ -1,6 +1,6 @@
 {
-  "name": "app_optimizar",
-  "version": "0.1.0",
+  "name": "solve-app",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

@@ -473,7 +473,7 @@ function App() {
     const rowsAOA: any[][] = [];
 
     // Fila 1 - Título Principal
-    rowsAOA.push(["DEUDAS//ZERO — Plan de Pagos", "", "", "", "", ""]);
+    rowsAOA.push(["$olve — Plan de Pagos", "", "", "", "", ""]);
 
     // Fila 2 - Subtítulo
     const fecha = new Date().toISOString().slice(0, 10);
@@ -839,7 +839,7 @@ function App() {
     }
 
     // Exportar archivo
-    XLSXStyle.writeFile(wb, `deudas-zero-plan-${fecha}.xlsx`);
+    XLSXStyle.writeFile(wb, `solve-plan-${fecha}.xlsx`);
   };
 
   const exportData = () => {
@@ -855,7 +855,7 @@ function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `deudas-zero-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `solve-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

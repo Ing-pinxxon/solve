@@ -1448,6 +1448,8 @@
   cursor: pointer; font-size: 0.74rem; padding: 0;
 }
 .auth-link:hover { text-decoration: underline; }
+.auth-privacy-note { font-size: 0.68rem; color: var(--clay-ink-mute); }
+a.auth-link { text-decoration: none; }
 
 /* LockGate — sección bloqueada con overlay */
 .lockgate { position: relative; border-radius: 16px; overflow: hidden; }

@@ -170,6 +170,12 @@ export function AuthModal() {
               ← Volver a iniciar sesión
             </button>
           )}
+          <span className="auth-privacy-note">
+            Al continuar aceptas la{' '}
+            <a href="/privacidad.html" target="_blank" rel="noopener noreferrer" className="auth-link">
+              política de privacidad
+            </a>
+          </span>
         </div>
       </div>
     </div>
