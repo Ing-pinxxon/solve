@@ -15,3 +15,28 @@ export const supabase: SupabaseClient | null =
     : null;
 
 export const isSupabaseConfigured = !!supabase;
+
+export interface EnabledProviders {
+  google: boolean;
+  apple: boolean;
+}
+
+/**
+ * Consulta qué proveedores OAuth están habilitados en el servidor de auth.
+ * Permite ocultar botones de login que terminarían en error ("provider is not
+ * enabled"). Devuelve null si no se puede consultar (offline/no configurado):
+ * en ese caso el caller decide el fallback.
+ */
+export async function fetchEnabledProviders(): Promise<EnabledProviders | null> {
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  try {
+    const res = await fetch(`${supabaseUrl}/auth/v1/settings`, {
+      headers: { apikey: supabaseAnonKey },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return { google: !!json.external?.google, apple: !!json.external?.apple };
+  } catch {
+    return null;
+  }
+}

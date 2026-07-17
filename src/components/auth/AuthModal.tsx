@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { fetchEnabledProviders, EnabledProviders } from '../../lib/supabase';
 
 type Mode = 'signin' | 'signup' | 'reset';
 
@@ -21,6 +22,14 @@ export function AuthModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  // Ocultar botones sociales de proveedores no habilitados en Supabase
+  // (tocarlos terminaría en "provider is not enabled"). Hasta confirmar, ocultos.
+  const [providers, setProviders] = useState<EnabledProviders>({ google: false, apple: false });
+
+  useEffect(() => {
+    if (!authModalOpen) return;
+    fetchEnabledProviders().then((p) => { if (p) setProviders(p); });
+  }, [authModalOpen]);
 
   if (!authModalOpen) return null;
 
@@ -88,15 +97,19 @@ export function AuthModal() {
           <p className="auth-modal-reason">{authModalReason}</p>
         )}
 
-        {mode !== 'reset' && (
+        {mode !== 'reset' && (providers.google || providers.apple) && (
           <>
             <div className="auth-social">
-              <button type="button" className="auth-social-btn" disabled={loading} onClick={() => handleSocial('google')}>
-                <GoogleIcon /> Continuar con Google
-              </button>
-              <button type="button" className="auth-social-btn auth-social-apple" disabled={loading} onClick={() => handleSocial('apple')}>
-                <AppleIcon /> Continuar con Apple
-              </button>
+              {providers.google && (
+                <button type="button" className="auth-social-btn" disabled={loading} onClick={() => handleSocial('google')}>
+                  <GoogleIcon /> Continuar con Google
+                </button>
+              )}
+              {providers.apple && (
+                <button type="button" className="auth-social-btn auth-social-apple" disabled={loading} onClick={() => handleSocial('apple')}>
+                  <AppleIcon /> Continuar con Apple
+                </button>
+              )}
             </div>
             <div className="auth-divider"><span>o</span></div>
           </>
