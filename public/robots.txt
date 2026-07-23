@@ -1,3 +1,5 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow:
+
+Sitemap: https://solve-ing-pinxxons-projects.vercel.app/sitemap.xml
